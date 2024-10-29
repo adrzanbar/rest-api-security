@@ -3,6 +3,8 @@ package com.uncode.rest_api_security.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-
+import java.util.stream.Collectors;
 
 @Service
 public class JwtUtil {
@@ -40,6 +42,9 @@ public class JwtUtil {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority) // Extract role authorities
+                .collect(Collectors.toList())); // Collect them into a list
         return createToken(claims, userDetails.getUsername());
     }
 
